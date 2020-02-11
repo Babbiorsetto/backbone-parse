@@ -86,23 +86,23 @@ var serverURL = "http://localhost:1337/parse";
     }
 
 		let request = {
-            //data
-            contentType: "application/json",
-            processData: false,
-            dataType: 'json',
-            data: data,
+      //data
+      contentType: "application/json",
+      processData: false,
+      dataType: 'json',
+      data: data,
 
-            //action
-            url: url,
-            type: type,
+      //action
+      url: url,
+      type: type,
 
-            //authentication
-            headers: {
-                "X-Parse-Application-Id": appId,
-            }
-        };
+      //authentication
+      headers: {
+          "X-Parse-Application-Id": appId,
+      }
+    };
 
-        return $.ajax(_.extend(options, request));
+    return $.ajax(_.extend(options, request));
 	};
 
 }
