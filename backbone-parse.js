@@ -8,22 +8,18 @@ var serverURL = "http://localhost:1337/parse";
 {
 
   /*
-    Replace the toJSON method of Backbone.Model with our version
-
-    This method removes the "createdAt" and "updatedAt" keys from the JSON version
-    because otherwise the PUT requests to Parse fails.
+    Modify each model's parse method to filter
+    "createdAt" and "updatedAt" returned by parse
   */
-  let original_toJSON =Backbone.Model.prototype.toJSON;
-  let ParseModel = {
-    toJSON : function(options) {
-      _parse_class_name = this.__proto__._parse_class_name;
-      data = original_toJSON.call(this,options);
-      delete data.createdAt
-      delete data.updatedAt
-      return data
-    },
 
-    idAttribute: "objectId"
+  let ParseModel = {
+      parse: function(resp, options) {
+        delete resp.createdAt;
+        delete resp.updatedAt;
+        return resp;
+      },
+
+      idAttribute: "objectId"
   };
   _.extend(Backbone.Model.prototype, ParseModel);
 
@@ -33,17 +29,17 @@ var serverURL = "http://localhost:1337/parse";
     Backbone Collection expects to get a JSON array when fetching.
     Parse returns a JSON object with key "results" and value being the array.
   */
-  let original_parse =Backbone.Collection.prototype.parse;
+
   let ParseCollection = {
-    parse : function(options) {
+    parse : function(resp, options) {
       let _parse_class_name = this.__proto__._parse_class_name;
-      let data = original_parse.call(this,options);
-      if (_parse_class_name && data.results) {
-        //do your thing
-        return data.results;
+      // if the collection is a parse collection and the response is coming from parse server
+      if (_parse_class_name && resp.results) {
+        // return array of results from the results property of the response
+        return resp.results;
       } else {
-        //return original
-        return data;
+      	//return original, in case there are collections from another source
+        return resp;
       }
     }
   };
