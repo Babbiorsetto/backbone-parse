@@ -5,7 +5,7 @@ var serverURL = "http://localhost:1337/parse";
 
 /******************* END *************************/
 
-(function() {
+{
 
     /*
         Replace the toJSON method of Backbone.Model with our version
@@ -13,7 +13,7 @@ var serverURL = "http://localhost:1337/parse";
         This method removes the "createdAt" and "updatedAt" keys from the JSON version
         because otherwise the PUT requests to Parse fails.
      */
-	var original_toJSON =Backbone.Model.prototype.toJSON;
+	let original_toJSON =Backbone.Model.prototype.toJSON;
     var ParseModel = {
         toJSON : function(options) {
             _parse_class_name = this.__proto__._parse_class_name;
@@ -33,11 +33,11 @@ var serverURL = "http://localhost:1337/parse";
         Backbone Collection expects to get a JSON array when fetching.
         Parse returns a JSON object with key "results" and value being the array.
     */
-    original_parse =Backbone.Collection.prototype.parse;
-    var ParseCollection = {
+    let original_parse =Backbone.Collection.prototype.parse;
+    let ParseCollection = {
         parse : function(options) {
-            _parse_class_name = this.__proto__._parse_class_name;
-            data = original_parse.call(this,options);
+            let _parse_class_name = this.__proto__._parse_class_name;
+            let data = original_parse.call(this,options);
             if (_parse_class_name && data.results) {
                 //do your thing
                 return data.results;
@@ -53,7 +53,7 @@ var serverURL = "http://localhost:1337/parse";
     /*
         Method to HTTP Type Map
     */
-	var methodMap = {
+	let methodMap = {
         'create': 'POST',
         'update': 'PUT',
         'delete': 'DELETE',
@@ -63,29 +63,29 @@ var serverURL = "http://localhost:1337/parse";
     /*
         Override the default Backbone.sync
     */
-    var ajaxSync = Backbone.sync;
+    let ajaxSync = Backbone.sync;
 	Backbone.sync = function(method, model, options) {
 
 
-        var object_id = model.models? "" : model.id; //get id if it is not a Backbone Collection
+        let object_id = model.models? "" : model.id; //get id if it is not a Backbone Collection
 
 
-        var class_name = model.__proto__._parse_class_name;
+        let class_name = model.__proto__._parse_class_name;
         if (!class_name) {
             return ajaxSync(method, model, options) //It's a not a Parse-backed model, use default sync
         }
 
         // create request parameteres
-		var type = methodMap[method];
+		let type = methodMap[method];
 	    options || (options = {});
-		var base_url = serverURL + "/classes";
-		var url = base_url + "/" + class_name + "/";
+		let base_url = serverURL + "/classes";
+		let url = base_url + "/" + class_name + "/";
         if (method != "create") {
             url = url + object_id;
         }
 
         //Setup data
-		var data ;
+		let data ;
 	    if (!options.data && model && (method == 'create' || method == 'update')) {
 	      data = JSON.stringify(model.toJSON());
 	    }
@@ -93,7 +93,7 @@ var serverURL = "http://localhost:1337/parse";
             data = encodeURI("where=" + JSON.stringify(options.query));
         }
 
-		var request = {
+		let request = {
             //data
             contentType: "application/json",
             processData: false,
@@ -113,4 +113,4 @@ var serverURL = "http://localhost:1337/parse";
         return $.ajax(_.extend(options, request));
 	};
 
-})();
+}
