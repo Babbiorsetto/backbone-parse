@@ -17,9 +17,8 @@ Download backbone-parse.js and include it in your application after backbone.js 
 Open backbone-parse.js and replace following at the top with your Parse credentials:
 
 ```javascript
-var application_id = "CkWCHMSOgyqoNKoIc5hu09uvdZcJ9rpHJD4iwhxI";
-var rest_api_key = "H5SIwarTRXqd07C0OIZPbcRTYTNLKsjFAJt5PrFY";
-var api_version = "1";
+var appId = "myApp";
+var serverURL = "http://localhost:1337/parse";
 
 ```
 
@@ -43,12 +42,12 @@ var ItemsCollection = new Backbone.Collection({
 });
 ```
 
-This class name will specify backbone-parse which class persists this model on the Parse server. It is case sensitive. If the class doesn't already exists, Parse will automatically create one. 
+This class name will specify backbone-parse which class persists this model on the Parse server. It is case sensitive. If the class doesn't already exists, Parse will automatically create one.
 
 If the class name is not specified, then the model will be persisted using the default Backbone Sync (i.e. you'll need to specify a url)
 
 ### Querying
-Parse.com provides an API to query your data. 
+Parse.com provides an API to query your data.
 
 backbone-parse provides an easier method for specifying query constraints*. All you need is to pass the constraints in ```fetch``` method of ```Backbone.Collection```. e.g.
 
