@@ -2,14 +2,16 @@
 
 backbone-parse overrides the Backbone.Sync method to automatically persist your backbone models on Parse using their REST API. Saving you from all the manual plumbing.
 
-## Installation
+# Installation
+
+## Direct download
 
 ### Step 1:
 
 Download backbone-parse.js and include it in your application after backbone.js e.g.
 ```html
 <script src="backbone-min.js"></script>
-<script src="backbone-parse-min.js"></script>
+<script src="backbone-parse.js"></script>
 ```
 
 
@@ -22,24 +24,31 @@ var serverURL = "http://localhost:1337/parse";
 
 ```
 
-
-## How to use it:
+# How to use it:
 
 ### Initialization:
 Create a Backbone model and set the parse class name:
 
 ```javascript
-var Item = new Backbone.Model({
-	_parse_class_name: "Item";
+var Item = Backbone.Model.extend({
+	_parse_class_name: "Item"
 });
+```
+
+Create instances of the model as you usually would with Backbone.js
+
+```javascript
+var item1 = new Item();
 ```
 
 Similarly for Collections:
 
 ```javascript
-var ItemsCollection = new Backbone.Collection({
-	_parse_class_name: "Item";
+var ItemsCollection = Backbone.Collection.extend({
+	_parse_class_name: "Item",
+	model: Item
 });
+var itemsCollection = new ItemsCollection();
 ```
 
 This class name will specify backbone-parse which class persists this model on the Parse server. It is case sensitive. If the class doesn't already exists, Parse will automatically create one.
@@ -47,7 +56,7 @@ This class name will specify backbone-parse which class persists this model on t
 If the class name is not specified, then the model will be persisted using the default Backbone Sync (i.e. you'll need to specify a url)
 
 ### Querying
-Parse.com provides an API to query your data.
+Parse provides an API to query your data.
 
 backbone-parse provides an easier method for specifying query constraints*. All you need is to pass the constraints in ```fetch``` method of ```Backbone.Collection```. e.g.
 
