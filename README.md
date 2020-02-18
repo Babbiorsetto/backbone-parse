@@ -75,17 +75,29 @@ For details about what constraints you can pass, read: https://parse.com/docs/re
 
 Feedback welcome.
 
+# Developing
+You are encouraged to modify and improve the code for your purposes. Fork this repository, clone it locally and you're good to go.
 
-## TODO:
+### Tests
+If you wish to modify the source, it is highly recommended you set up the testing environment. Dependencies for the testing environment are set up in package.json to use with the node package manager. If you already have node installed just run
+`npm install` in the repository's top level directory. Run `npm run test` to start the test runner.
 
-- tests(!)
+# TODO:
+
 - extend Backbone.Model to tackle Parse User objects
 
 
-## License
+### License
 
 Distributed under [MIT license](http://mutedsolutions.mit-license.org/).
 
+### Uses:
+
+* [testem test runner](https://github.com/testem/testem/)
+* [mocha testing framework](https://mochajs.org/)
+* [chai assertion library](https://www.chaijs.com/)
+* [sinon mocking framework](https://sinonjs.org/)
+* [sinon-chai: chai assertions for sinon](https://github.com/domenic/sinon-chai)
 -------
 
 *inspired by: http://houseofbilz.com/archives/2011/11/07/making-backbone-js-work-with-parse-com/
