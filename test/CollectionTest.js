@@ -1,8 +1,11 @@
+import chai from "chai";
+import {describe, it} from "mocha";
+import {Collection as ParseCollection} from "../backbone-parse";
 var expect = chai.expect;
 
 describe('Collection', function(){
 
-  var Collection = Backbone.Collection.extend({_parse_class_name: 'Test'});
+  var Collection = ParseCollection.extend({_parse_class_name: 'Test'});
   var collectionInstance = new Collection();
 
   it('_parse_class_name should be the one passed on collection definition', function(){

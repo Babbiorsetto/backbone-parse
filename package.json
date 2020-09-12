@@ -4,17 +4,22 @@
   "description": "",
   "main": "",
   "scripts": {
-    "test": "testem"
+    "test": "npm run build && mocha ./dist/main.js",
+    "build": "webpack"
   },
   "author": "",
   "license": "",
   "devDependencies": {
-    "backbone": "^1.4.0",
     "chai": "^4.2.0",
-    "jquery": "^3.4.1",
     "mocha": "^7.0.1",
     "sinon": "^8.1.1",
     "sinon-chai": "^3.4.0",
-    "testem": "^3.0.2"
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "backbone": "^1.4.0",
+    "jquery": "^3.5.1",
+    "underscore": "^1.11.0"
   }
 }
