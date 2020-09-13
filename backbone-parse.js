@@ -1,6 +1,3 @@
-import _ from "underscore";
-import $ from "jquery";
-import Backbone from "backbone";
 /********** PARSE SERVER ACCESS PARAMETERS **********/
 
 export var appId = "myApp";

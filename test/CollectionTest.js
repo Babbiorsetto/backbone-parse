@@ -1,6 +1,5 @@
-import chai from "chai";
-import {describe, it} from "mocha";
-import {Collection as ParseCollection} from "../backbone-parse";
+import {Collection as ParseCollection} from "../backbone-parse.js";
+
 var expect = chai.expect;
 
 describe('Collection', function(){

@@ -2,24 +2,20 @@
   "name": "backbone-parse",
   "version": "1.0.0",
   "description": "",
-  "main": "",
+  "browser": "backbone-parse.js",
   "scripts": {
-    "test": "npm run build && mocha ./dist/main.js",
-    "build": "webpack"
+    "test": "serve"
   },
   "author": "",
   "license": "",
   "devDependencies": {
+    "backbone": "^1.4.0",
     "chai": "^4.2.0",
+    "jquery": "^3.5.1",
     "mocha": "^7.0.1",
+    "serve": "^11.3.2",
     "sinon": "^8.1.1",
     "sinon-chai": "^3.4.0",
-    "webpack": "^4.44.1",
-    "webpack-cli": "^3.3.12"
-  },
-  "dependencies": {
-    "backbone": "^1.4.0",
-    "jquery": "^3.5.1",
     "underscore": "^1.11.0"
   }
 }

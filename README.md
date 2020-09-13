@@ -1,28 +1,59 @@
 # backbone-parse
 
-backbone-parse overrides the Backbone.Sync method to automatically persist your backbone models on Parse using their REST API. Saving you from all the manual plumbing.
+backbone-parse modifies the default Backbone model and collection to automatically persist your backbone models on Parse using their REST API. Saving you from all the manual plumbing.
 
 # Installation
 
-## Direct download
+### Step 0:
 
-### Step 1:
-
-Download backbone-parse.js and include it in your application after backbone.js e.g.
+Because of the way backbone works, backbone-parse cannot import it as a module without the use of a transpiler.
+To allow the use as a native ES6 module directly in the browser, backbone-parse relies on the global Backbone object available when backbone is included as a script.
+This means Backbone should be included as a script, as it will not be available otherwise.
 ```html
-<script src="backbone-min.js"></script>
-<script src="backbone-parse.js"></script>
+<head>
+	<script src="some.content.delivery.network.com/backbone"></script>
+</head>
+```
+or from a local source
+```html
+<head>
+	<script src="./node_modules/backbone/backbone-min.js"></script>
+</head>
 ```
 
+### Step 1a - Direct download:
+
+Download backbone-parse.js and place it somewhere locally
+
+### Step 1b - Download with npm:
+
+run from your project's root
+```bash
+npm install github:Babbiorsetto/backbone-parse#ES6
+```
+to download backbone-parse in your node_modules directory
 
 ### Step 2:
+
 Open backbone-parse.js and replace following at the top with your Parse credentials:
 
 ```javascript
-var appId = "myApp";
-var serverURL = "http://localhost:1337/parse";
-
+export var appId = "myApp";
+export var serverURL = "http://localhost:1337/parse";
 ```
+
+### Step 3 - include it in your project:
+
+if you want to use the exact path
+```javascript
+import {Collection, Model, AppId, serverURL} from './path-to-file/backbone-parse.js';
+```
+
+If using a transpiler like webpack, together with node you could try
+```javascript
+import {Collection, Model, AppId, serverURL} from 'backbone-parse';
+```
+and webpack should be able to find it and bundle it with your application
 
 # How to use it:
 
@@ -30,7 +61,9 @@ var serverURL = "http://localhost:1337/parse";
 Create a Backbone model and set the parse class name:
 
 ```javascript
-var Item = Backbone.Model.extend({
+import {Model} from 'backbone-parse';
+
+var Item = Model.extend({
 	_parse_class_name: "Item"
 });
 ```
@@ -44,7 +77,9 @@ var item1 = new Item();
 Similarly for Collections:
 
 ```javascript
-var ItemsCollection = Backbone.Collection.extend({
+import {Collection} from 'backbone-parse';
+
+var ItemsCollection = Collection.extend({
 	_parse_class_name: "Item",
 	model: Item
 });
@@ -61,7 +96,7 @@ Parse provides an API to query your data.
 backbone-parse provides an easier method for specifying query constraints*. All you need is to pass the constraints in ```fetch``` method of ```Backbone.Collection```. e.g.
 
 ```javascript
-var ItemCollection = new Backbone.Collection({
+var ItemCollection = new Collection({
 	_parse_class_name: "Item"
 });
 
@@ -93,7 +128,6 @@ Distributed under [MIT license](http://mutedsolutions.mit-license.org/).
 
 ### Uses:
 
-* [testem test runner](https://github.com/testem/testem/)
 * [mocha testing framework](https://mochajs.org/)
 * [chai assertion library](https://www.chaijs.com/)
 * [sinon mocking framework](https://sinonjs.org/)
