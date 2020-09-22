@@ -4,32 +4,11 @@ backbone-parse modifies the default Backbone model and collection to automatical
 
 # Installation
 
-### Step 0:
-
-Because of the way backbone works, backbone-parse cannot import it as a module without the use of a transpiler.
-To allow the use as a native ES6 module directly in the browser, backbone-parse relies on the global Backbone object available when backbone is included as a script.
-This means Backbone should be included as a script, as it will not be available otherwise.
-```html
-<head>
-	<script src="some.content.delivery.network.com/backbone"></script>
-</head>
-```
-or from a local source
-```html
-<head>
-	<script src="./node_modules/backbone/backbone-min.js"></script>
-</head>
-```
-
-### Step 1a - Direct download:
-
-Download backbone-parse.js and place it somewhere locally
-
-### Step 1b - Download with npm:
+### Step 1 - Download with npm:
 
 run from your project's root
 ```bash
-npm install github:Babbiorsetto/backbone-parse#ES6
+npm install github:Babbiorsetto/backbone-parse#webpack
 ```
 to download backbone-parse in your node_modules directory
 
@@ -43,11 +22,6 @@ export var serverURL = "http://localhost:1337/parse";
 ```
 
 ### Step 3 - include it in your project:
-
-if you want to use the exact path
-```javascript
-import {Collection, Model, AppId, serverURL} from './path-to-file/backbone-parse.js';
-```
 
 If using a transpiler like webpack, together with node you could try
 ```javascript
