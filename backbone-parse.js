@@ -9,20 +9,65 @@ export var serverURL = "http://localhost:1337/parse";
 /******************* END *************************/
 
 /*
-  Modify each model's parse method to filter
-  "createdAt" and "updatedAt" returned by parse
+Modify each model's parse method to filter
+"createdAt" and "updatedAt" returned by parse
 */
-let localModel = Backbone.Model;
-let ParseModel = {
-    parse: function(resp, options) {
-      delete resp.createdAt;
-      delete resp.updatedAt;
-      return resp;
-    },
+let localModel = Backbone.Model.extend({
+  parse: function(resp, options) {
+    delete resp.createdAt;
+    delete resp.updatedAt;
+    return resp;
+  },
+  
+  idAttribute: "objectId"
+});
 
-    idAttribute: "objectId"
-};
-_.extend(localModel.prototype, ParseModel);
+let User = localModel.extend({
+  _parse_class_name: 'User',
+  toJSON: function() {
+    let temp = _.clone(this.attributes);
+    delete temp.sessionToken;
+    return temp;
+  },
+  signup: function(options) {
+    if (!this.isNew()) {
+      throw new Error('cannot call signup on an already existing user');
+    }
+    return this.save(options);
+  },
+  login: function(options) {
+    if (!this.get('username') || !this.get('password')) {
+      throw new Error('cannot call login on a user without username or password');
+    }
+    return this.fetch(options);
+  },
+  update: function(options) {
+    if (!this.get('sessionToken')) {
+      throw new Error('cannot call update without a session token');
+    }
+    return this.save(options);
+  },
+  retrieve: function(options) {
+    if (!this.get('sessionToken')) {
+      throw new Error('cannot call retrieve without a session token');
+    }
+    options = _.extend({parse: true}, options);
+    var model = this;
+    var success = options.success;
+    options.success = function(resp) {
+      var serverAttrs = options.parse ? model.parse(resp, options) : resp;
+      if (!model.set(serverAttrs, options)) return false;
+      if (success) success.call(options.context, model, resp, options);
+      model.trigger('sync', model, resp, options);
+    };
+    var error = options.error;
+    options.error = function(resp) {
+      if (error) error.call(options.context, model, resp, options);
+      model.trigger('error', model, resp, options);
+    };
+    return this.sync('retrieve', this, options);
+  },
+});
 
 /*
   Replace the parse method of Backbone.Collection
@@ -31,8 +76,7 @@ _.extend(localModel.prototype, ParseModel);
   Parse returns a JSON object with key "results" and value being the array.
 */
 
-let localCollection = Backbone.Collection;
-let ParseCollection = {
+let localCollection = Backbone.Collection.extend({
   parse : function(resp, options) {
     let _parse_class_name = this.__proto__._parse_class_name;
     // if the collection is a parse collection and the response is coming from parse server
@@ -44,8 +88,8 @@ let ParseCollection = {
       return resp;
     }
   }
-};
-_.extend(localCollection.prototype, ParseCollection);
+});
+
 
 /*
   Method to HTTP Type Map
@@ -65,7 +109,7 @@ let newSync = function(method, model, options) {
 
   let object_id = model.models? "" : model.id; //get id if it is not a Backbone Collection
 
-  let class_name = model.__proto__._parse_class_name;
+  let class_name = model._parse_class_name;
   if (!class_name) {
     return ajaxSync(method, model, options) //It's a not a Parse-backed model, use default sync
   }
@@ -74,7 +118,7 @@ let newSync = function(method, model, options) {
   let type = methodMap[method];
     options || (options = {});
   let base_url = serverURL + "/classes";
-  let url = base_url + "/" + class_name + "/";
+  let url = base_url + "/" + class_name;
   if (method != "create") {
     url = url + object_id;
   }
@@ -107,6 +151,68 @@ let newSync = function(method, model, options) {
   return $.ajax(_.extend(options, request));
 };
 
+let userSync = function(method, model, options) {
+
+  let type;
+  let url = serverURL;
+  
+  switch (method) {
+    case 'create':
+      type = 'POST';
+      url = url + '/users';
+      break;
+    case 'read':
+      type = 'GET';
+      url = url + '/login';
+      break;
+    case 'update':
+      type = 'PUT';
+      url = url + `/users/${model.id}`;
+      break;
+    case 'retrieve':
+      type = 'GET';
+      url = url + '/users/me';
+      break;
+  }
+
+  let data = JSON.stringify(model.toJSON());
+
+  let request = {
+    //data
+    contentType: "application/json",
+    processData: false,
+    dataType: 'json',
+    data: data,
+
+    //action
+    url: url,
+    type: type,
+
+    //authentication
+    headers: {
+        "X-Parse-Application-Id": appId,
+    }
+  };
+
+  // method is read (login)
+  if (method == 'read') {
+    request.processData = true;
+    request.contentType = "application/x-www-form-urlencoded";
+    request.data = {
+      username: model.get('username'),
+      password: model.get('password')
+    };
+  };
+
+  // method is update or retrieve
+  if (_.contains(['update', 'retrieve'], method)) {
+    request.headers["X-Parse-Session-Token"] = model.get('sessionToken');
+  }
+
+  return $.ajax(_.extend(options, request));
+};
+
 localModel.prototype.sync = newSync;
 localCollection.prototype.sync = newSync;
-export {localModel as Model, localCollection as Collection};
+User.prototype.sync = userSync;
+export {localModel as Model, localCollection as Collection, User};

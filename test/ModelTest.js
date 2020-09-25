@@ -25,7 +25,7 @@ describe('Model', function(){
   });
   it('its \'save\' method makes a request to the correct URL to create a new database object', function(){
     let saveStub = sinon.stub(jQuery, 'ajax');
-    let url = serverURL + '/classes/Test/';
+    let url = serverURL + '/classes/Test';
 
     modelInstance.save();
     expect(saveStub).to.have.been.calledOnce;
