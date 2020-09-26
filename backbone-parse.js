@@ -11,9 +11,10 @@ Modify each model's parse method to filter
 */
 let localModel = Backbone.Model.extend({
   parse: function(resp, options) {
-    delete resp.createdAt;
-    delete resp.updatedAt;
-    return resp;
+    let copy = _.clone(resp);
+    delete copy.createdAt;
+    delete copy.updatedAt;
+    return copy;
   },
   
   idAttribute: "objectId"
