@@ -14,9 +14,10 @@ Modify each model's parse method to filter
 */
 let localModel = Backbone.Model.extend({
   parse: function(resp, options) {
-    delete resp.createdAt;
-    delete resp.updatedAt;
-    return resp;
+    let copy = _.clone(resp);
+    delete copy.createdAt;
+    delete copy.updatedAt;
+    return copy;
   },
   
   idAttribute: "objectId"
@@ -33,7 +34,7 @@ let User = localModel.extend({
     if (!this.isNew()) {
       throw new Error('cannot call signup on an already existing user');
     }
-    return this.save(options);
+    return this.save(null, options);
   },
   login: function(options) {
     if (!this.get('username') || !this.get('password')) {
@@ -45,7 +46,7 @@ let User = localModel.extend({
     if (!this.get('sessionToken')) {
       throw new Error('cannot call update without a session token');
     }
-    return this.save(options);
+    return this.save(null, options);
   },
   retrieve: function(options) {
     if (!this.get('sessionToken')) {
