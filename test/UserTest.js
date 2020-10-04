@@ -32,6 +32,7 @@ describe('User', function() {
         let data = {
             objectId: 123,
             customOption: 'custom',
+            sessionToken: 'abcd',
         };
 
         beforeEach(function() {
@@ -39,6 +40,7 @@ describe('User', function() {
             // replicate how jquery would call 'options.success'
             // passing the object obtained by parsing the json sent by parse
             saveStub.yieldsTo('success', {objectId: data.objectId});
+            saveStub.resolves({sessionToken: data.sessionToken});
         });
 
         afterEach(function() {
@@ -81,6 +83,18 @@ describe('User', function() {
             expect(spy.getCall(0).args[1].objectId).to.equal(data.objectId);
             expect(spy.getCall(0).args[2].customOption).to.equal(data.customOption);
         });
+
+        it('triggers a signup event on the model, passing sessionToken as an argument', function(done) {
+            var object = {};
+            _.extend(object, Backbone.Events);
+            var spy = sinon.spy();
+
+            object.listenTo(user, 'signup', spy);
+            user.signup().then(function() {
+                expect(spy).to.have.been.calledOnceWith(data.sessionToken);
+            }).then(done);
+            
+        })
     });
 
     describe('login', function() {
@@ -104,6 +118,7 @@ describe('User', function() {
                 objectId: "g7y9tkhB7O",
                 sessionToken: data.sessionToken,
             });
+            saveStub.resolves({sessionToken: data.sessionToken});
             
             user.set('username', data.username);
             user.set('password', data.password);
@@ -177,6 +192,17 @@ describe('User', function() {
             expect(spy.getCall(0).args[1].sessionToken).to.equal(data.sessionToken);
             expect(spy.getCall(0).args[2].customOption).to.equal(data.customOption);
         });
+
+        it('triggers a login event on the model, passing sessionToken as an argument', function(done) {
+            var object = {};
+            _.extend(object, Backbone.Events);
+            var spy = sinon.spy();
+
+            object.listenTo(user, 'login', spy);
+            user.login().then(function() {
+                expect(spy).to.have.been.calledOnceWith(data.sessionToken);
+            }).then(done);
+        });
     });
 
     describe('update', function() {
@@ -197,6 +223,7 @@ describe('User', function() {
             saveStub.yieldsTo('success', {
                 updatedAt: "2011-11-07T20:58:34.448Z"
             });
+            saveStub.resolves({});
             
             user.set('username', data.username);
             user.set('password', data.password);
@@ -250,6 +277,16 @@ describe('User', function() {
             expect(spy.getCall(0).args[2].customOption).to.equal(data.customOption);
         });
 
+        it('triggers an update event on the model', function(done) {
+            var object = {};
+            _.extend(object, Backbone.Events);
+            var spy = sinon.spy();
+            object.listenTo(user, 'update', spy);
+
+            user.update().then(function() {
+                expect(spy).to.have.been.calledOnce;
+            }).then(done);
+        });
     });
 
     describe('retrieve', function() {
@@ -273,6 +310,7 @@ describe('User', function() {
                 updatedAt: "2011-11-07T20:58:34.448Z",
                 objectId: data.objectId
             });
+            saveStub.resolves({});
 
             user.set('sessionToken', data.sessionToken);
         });
@@ -326,6 +364,17 @@ describe('User', function() {
             expect(spy.getCall(0).args[0]).to.equal(user);
             expect(spy.getCall(0).args[1].updatedAt).to.equal("2011-11-07T20:58:34.448Z");
             expect(spy.getCall(0).args[2].customOption).to.equal(data.customOption);
+        });
+
+        it('triggers a retrieve event on the model', function(done) {
+            var object = {};
+            _.extend(object, Backbone.Events);
+            var spy = sinon.spy();
+            object.listenTo(user, 'retrieve', spy);
+
+            user.retrieve().then(function() {
+                expect(spy).to.have.been.calledOnce;
+            }).then(done);
         });
     });
 
