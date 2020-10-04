@@ -31,19 +31,34 @@ let User = localModel.extend({
     if (!this.isNew()) {
       throw new Error('cannot call signup on an already existing user');
     }
-    return this.save(null, options);
+    var model = this;
+    var promise = this.save(null, options);
+    return promise.then(function(data) {
+      model.trigger('signup', data.sessionToken);
+      return promise;
+    });
   },
   login: function(options) {
     if (!this.get('username') || !this.get('password')) {
       throw new Error('cannot call login on a user without username or password');
     }
-    return this.fetch(options);
+    var model = this;
+    var promise = this.fetch(options);
+    return promise.then(function(data) {
+      model.trigger('login', data.sessionToken);
+      return promise;
+    });
   },
   update: function(options) {
     if (!this.get('sessionToken')) {
       throw new Error('cannot call update without a session token');
     }
-    return this.save(null, options);
+    var model = this;
+    var promise = this.save(null, options);
+    return promise.then(function() {
+      model.trigger('update');
+      return promise;
+    });
   },
   retrieve: function(options) {
     if (!this.get('sessionToken')) {
@@ -63,7 +78,11 @@ let User = localModel.extend({
       if (error) error.call(options.context, model, resp, options);
       model.trigger('error', model, resp, options);
     };
-    return this.sync('retrieve', this, options);
+    var promise = this.sync('retrieve', this, options);
+    return promise.then(function() {
+      model.trigger('retrieve');
+      return promise;
+    });
   },
 });
 
