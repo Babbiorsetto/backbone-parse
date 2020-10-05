@@ -229,6 +229,10 @@ let userSync = function(method, model, options) {
     request.headers["X-Parse-Session-Token"] = model.get('sessionToken');
   }
 
+  if ('retrieve' == method) {
+    delete request.data;
+  }
+
   return $.ajax(_.extend(options, request));
 };
 
