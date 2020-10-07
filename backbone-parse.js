@@ -35,7 +35,6 @@ let User = localModel.extend({
     var promise = this.save(null, options);
     return promise.then(function(data) {
       model.trigger('signup', data.sessionToken);
-      return promise;
     });
   },
   login: function(options) {
@@ -46,7 +45,6 @@ let User = localModel.extend({
     var promise = this.fetch(options);
     return promise.then(function(data) {
       model.trigger('login', data.sessionToken);
-      return promise;
     });
   },
   update: function(options) {
@@ -57,7 +55,6 @@ let User = localModel.extend({
     var promise = this.save(null, options);
     return promise.then(function() {
       model.trigger('update');
-      return promise;
     });
   },
   retrieve: function(options) {
@@ -81,7 +78,6 @@ let User = localModel.extend({
     var promise = this.sync('retrieve', this, options);
     return promise.then(function() {
       model.trigger('retrieve');
-      return promise;
     });
   },
   logout: function(options) {
