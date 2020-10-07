@@ -342,10 +342,10 @@ describe('User', function() {
             expect(ajaxOptions.headers['X-Parse-Session-Token']).to.equal(data.sessionToken);
         });
 
-        it('does not send the session token as a field', function() {
+        it('does not send any URL encoded data', function() {
             user.retrieve();
             let ajaxOptions = saveStub.getCall(0).args[0];
-            expect(ajaxOptions.data['X-Parse-Session-Token']).to.not.exist;
+            expect(ajaxOptions.data).to.not.exist;
         });
 
         it('sets the fields received by Parse', function() {
