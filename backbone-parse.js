@@ -38,7 +38,6 @@ let User = localModel.extend({
     var promise = this.save(null, options);
     return promise.then(function(data) {
       model.trigger('signup', data.sessionToken);
-      return promise;
     });
   },
   login: function(options) {
@@ -49,7 +48,6 @@ let User = localModel.extend({
     var promise = this.fetch(options);
     return promise.then(function(data) {
       model.trigger('login', data.sessionToken);
-      return promise;
     });
   },
   update: function(options) {
@@ -60,7 +58,6 @@ let User = localModel.extend({
     var promise = this.save(null, options);
     return promise.then(function() {
       model.trigger('update');
-      return promise;
     });
   },
   retrieve: function(options) {
@@ -84,7 +81,30 @@ let User = localModel.extend({
     var promise = this.sync('retrieve', this, options);
     return promise.then(function() {
       model.trigger('retrieve');
-      return promise;
+    });
+  },
+  logout: function(options) {
+    if (!this.get('sessionToken')) {
+      throw new Error('cannot call logout without a session token');
+    }
+    options = _.extend({parse: true}, options);
+    var model = this;
+    var success = options.success;
+    options.success = function(resp) {
+      for (var attr in model.attributes) {
+        model.set(attr, undefined);
+      }
+      if (success) success.call(options.context, model, resp, options);
+      model.trigger('sync', model, resp, options);
+    };
+    var error = options.error;
+    options.error = function(resp) {
+      if (error) error.call(options.context, model, resp, options);
+      model.trigger('error', model, resp, options);
+    };
+    var promise = this.sync('logout', this, options);
+    return promise.then(function() {
+      model.trigger('logout');
     });
   },
 });
@@ -193,7 +213,11 @@ let userSync = function(method, model, options) {
       type = 'GET';
       url = url + '/users/me';
       break;
-  }
+    case 'logout':
+      type = 'POST';
+      url = url + '/logout';
+      break;
+    }
 
   let data = JSON.stringify(model.toJSON());
 
@@ -225,8 +249,12 @@ let userSync = function(method, model, options) {
   };
 
   // method is update or retrieve
-  if (_.contains(['update', 'retrieve'], method)) {
+  if (_.contains(['update', 'retrieve', 'logout'], method)) {
     request.headers["X-Parse-Session-Token"] = model.get('sessionToken');
+  }
+
+  if ('retrieve' == method || 'logout' == method) {
+    delete request.data;
   }
 
   return $.ajax(_.extend(options, request));

@@ -342,10 +342,10 @@ describe('User', function() {
             expect(ajaxOptions.headers['X-Parse-Session-Token']).to.equal(data.sessionToken);
         });
 
-        it('does not send the session token as a field', function() {
+        it('does not send any URL encoded data', function() {
             user.retrieve();
             let ajaxOptions = saveStub.getCall(0).args[0];
-            expect(ajaxOptions.data['X-Parse-Session-Token']).to.not.exist;
+            expect(ajaxOptions.data).to.not.exist;
         });
 
         it('sets the fields received by Parse', function() {
@@ -376,6 +376,80 @@ describe('User', function() {
                 expect(spy).to.have.been.calledOnce;
             }).then(done);
         });
+    });
+
+    describe('logout', function() {
+
+        let saveStub;
+        let data = {
+            sessionToken: 'haofhadau',
+            name: 'Massimo',
+            objectId: 'abcd',
+        };
+        let url = serverURL + '/logout';
+
+        beforeEach(function() {
+            saveStub = sinon.stub(jQuery, 'ajax');
+            saveStub.yieldsTo('success');
+            saveStub.resolves({});
+
+            user.set(data);
+        });
+
+        afterEach(function() {
+            saveStub.restore();
+        });
+
+        it('makes a request to the correct endpoint', function() {
+            user.logout();
+            expect(saveStub).to.have.been.calledOnce;
+            let ajaxOptions = saveStub.getCall(0).args[0];
+            expect(ajaxOptions.type).to.equal('POST');
+            expect(ajaxOptions.url).to.equal(url);
+        });
+
+        it('throws an error if called without a session token', function() {
+            user.unset('sessionToken');
+            expect(user.logout.bind(user)).to.throw('session');
+        });
+
+        it('does not throw error if called with a session token', function() {
+            expect(user.logout.bind(user)).to.not.throw();
+        });
+
+        it('sends the session token as a header', function() {
+            user.logout();
+            let ajaxOptions = saveStub.getCall(0).args[0];
+            expect(ajaxOptions.headers['X-Parse-Session-Token']).to.equal(data.sessionToken);
+        });
+
+        it('does not send any POST data', function() {
+            user.logout();
+            let ajaxOptions = saveStub.getCall(0).args[0];
+            expect(ajaxOptions.data).to.not.exist;
+        });
+
+        it('sets all previously set attributes to undefined', function(done) {
+            user.logout().then(function(){
+                expect(user.get('name')).to.be.undefined;
+                expect(user.get('sessionToken')).to.be.undefined;
+                expect(user.id).to.be.undefined;
+                done();
+            });
+            
+        });
+
+        it('triggers a logout event on the model', function(done) {
+            var object = {};
+            _.extend(object, Backbone.Events);
+            var spy = sinon.spy();
+            object.listenTo(user, 'logout', spy);
+
+            user.logout().then(function() {
+                expect(spy).to.have.been.calledOnce;
+            }).then(done);
+        });
+
     });
 
     it('no methods should ever send sessionToken as a field');
