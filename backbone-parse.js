@@ -33,9 +33,12 @@ let User = localModel.extend({
     }
     var model = this;
     var promise = this.save(null, options);
-    return promise.then(function(data) {
-      model.trigger('signup', data.sessionToken);
-    });
+    if (promise) {
+      return promise.then(function(data) {
+        model.trigger('signup', data.sessionToken);
+      });
+    }
+    return false;
   },
   login: function(options) {
     if (!this.get('username') || !this.get('password')) {
@@ -53,9 +56,12 @@ let User = localModel.extend({
     }
     var model = this;
     var promise = this.save(null, options);
-    return promise.then(function() {
-      model.trigger('update');
-    });
+    if (promise) {
+      return promise.then(function() {
+        model.trigger('update');
+      });
+    }
+    return false;
   },
   retrieve: function(options) {
     if (!this.get('sessionToken')) {
