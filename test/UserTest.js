@@ -76,7 +76,7 @@ describe('User', function() {
 
             let spy = sinon.spy();
 
-            user.signup({success: spy, customOption: data.customOption});
+            user.signup(null, {success: spy, customOption: data.customOption});
 
             expect(spy).to.have.been.calledOnce;
             expect(spy.getCall(0).args[0]).to.equal(user);
@@ -269,7 +269,7 @@ describe('User', function() {
 
             let spy = sinon.spy();
 
-            user.update({success: spy, customOption: data.customOption});
+            user.update(null, {success: spy, customOption: data.customOption});
 
             expect(spy).to.have.been.calledOnce;
             expect(spy.getCall(0).args[0]).to.equal(user);

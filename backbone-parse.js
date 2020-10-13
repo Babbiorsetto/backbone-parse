@@ -27,12 +27,13 @@ let User = localModel.extend({
     delete temp.sessionToken;
     return temp;
   },
-  signup: function(options) {
+  signup: function(attrs, options) {
     if (!this.isNew()) {
       throw new Error('cannot call signup on an already existing user');
     }
+    if(!attrs) attrs = null;
     var model = this;
-    var promise = this.save(null, options);
+    var promise = this.save(attrs, options);
     if (promise) {
       return promise.then(function(data) {
         model.trigger('signup', data.sessionToken);
@@ -50,12 +51,13 @@ let User = localModel.extend({
       model.trigger('login', data.sessionToken);
     });
   },
-  update: function(options) {
+  update: function(attrs, options) {
     if (!this.get('sessionToken')) {
       throw new Error('cannot call update without a session token');
     }
+    if (!attrs) attrs = null;
     var model = this;
-    var promise = this.save(null, options);
+    var promise = this.save(attrs, options);
     if (promise) {
       return promise.then(function() {
         model.trigger('update');
