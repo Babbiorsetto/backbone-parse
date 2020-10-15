@@ -17,6 +17,9 @@ let localModel = Backbone.Model.extend({
     let copy = _.clone(resp);
     delete copy.createdAt;
     delete copy.updatedAt;
+    delete copy.ACL;
+    delete copy.__type;
+    delete copy.className;
     return copy;
   },
   
@@ -62,8 +65,8 @@ let User = localModel.extend({
     var model = this;
     var promise = this.save(attrs, options);
     if (promise) {
-      return promise.then(function() {
-        model.trigger('update');
+      return promise.then(function(data) {
+        model.trigger('update', data.sessionToken);
       });
     }
     return false;
