@@ -165,7 +165,7 @@ let newSync = function(method, model, options) {
   let base_url = serverURL + "/classes";
   let url = base_url + "/" + class_name;
   if (method != "create") {
-    url = url + object_id;
+    url = url + `/${object_id}`;
   }
 
   //Setup data
