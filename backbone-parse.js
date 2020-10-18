@@ -2,6 +2,7 @@
 
 export var appId = "myApp";
 export var serverURL = "http://localhost:1337/parse";
+export var RESTApiKey = 'myRESTApiKey';
 
 /******************* END *************************/
 
@@ -193,6 +194,7 @@ let newSync = function(method, model, options) {
     //authentication
     headers: {
         "X-Parse-Application-Id": appId,
+        "X-Parse-REST-API-Key": RESTApiKey,
     }
   };
 
@@ -243,6 +245,7 @@ let userSync = function(method, model, options) {
     //authentication
     headers: {
         "X-Parse-Application-Id": appId,
+        "X-Parse-REST-API-Key": RESTApiKey,
     }
   };
 
