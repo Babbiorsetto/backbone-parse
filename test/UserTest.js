@@ -1,4 +1,4 @@
-import { serverURL, User } from '../backbone-parse.js';
+import { appId, RESTApiKey, serverURL, User } from '../backbone-parse.js';
 
 var expect = chai.expect;
 describe('User', function() {
@@ -24,6 +24,21 @@ describe('User', function() {
         user.set({password: 'HowYouDoin'});
 
         expect(user.get('password')).to.equal('HowYouDoin');
+    });
+
+    it('sends the correct headers in requests', function() {
+
+        let saveStub = sinon.stub(jQuery, 'ajax');
+        user.set({username: 'Goofy', password: 'Donald'});
+
+        user.save();
+
+        expect(saveStub).to.have.been.calledOnce;
+        let ajaxOptions = saveStub.getCall(0).args[0];
+        expect(ajaxOptions.headers['X-Parse-Application-Id']).to.equal(appId);
+        expect(ajaxOptions.headers['X-Parse-REST-API-Key']).to.equal(RESTApiKey);
+
+        saveStub.restore();
     });
 
     describe('signup', function() {

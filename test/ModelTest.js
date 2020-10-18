@@ -1,4 +1,4 @@
-import {Model as ParseModel, serverURL, appId} from "../backbone-parse.js";
+import {Model as ParseModel, serverURL, appId, RESTApiKey} from "../backbone-parse.js";
 
 var expect = chai.expect;
 describe('Model', function(){
@@ -47,6 +47,19 @@ describe('Model', function(){
     expect(saveStub).to.have.been.calledOnce;
     let ajaxOptions = saveStub.getCall(0).args[0];
     expect(ajaxOptions.url).to.equal(url);
+
+    saveStub.restore();
+  });
+
+  it('appends the correct headers to requests', function() {
+    let saveStub = sinon.stub(jQuery, 'ajax');
+    
+    modelInstance.save();
+
+    expect(saveStub).to.have.been.calledOnce;
+    let ajaxOptions = saveStub.getCall(0).args[0];
+    expect(ajaxOptions.headers['X-Parse-Application-Id']).to.equal(appId);
+    expect(ajaxOptions.headers['X-Parse-REST-API-Key']).to.equal(RESTApiKey);
 
     saveStub.restore();
   });
