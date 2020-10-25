@@ -2,10 +2,10 @@ import $ from 'jquery';
 import _ from 'underscore';
 import Backbone from 'backbone';
 /********** PARSE SERVER ACCESS PARAMETERS **********/
-
-export var appId = "myApp";
-export var serverURL = "http://localhost:1337/parse";
-export var RESTApiKey = 'myRESTApiKey';
+// define these through webpack.DefinePlugin in your build configuration
+export var appId = PARSE_APP_ID;
+export var serverURL = PARSE_SERVER_URL;
+export var RESTApiKey = PARSE_REST_API_KEY;
 
 /******************* END *************************/
 
